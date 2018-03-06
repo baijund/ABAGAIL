@@ -33,7 +33,13 @@ import shared.FixedIterationTrainer;
  */
 public class TravelingSalesmanTest {
     /** The n value */
-    private static final int N = 50;
+    private static final int N = 60;
+    
+    private static int RHC_COUNT = 20;
+    private static int SA_COUNT = 20;
+    private static int GA_COUNT = 20;
+    private static int MIMIC_COUNT = 20;
+    
     /**
      * The test main
      * @param args ignored
@@ -55,20 +61,33 @@ public class TravelingSalesmanTest {
         HillClimbingProblem hcp = new GenericHillClimbingProblem(ef, odd, nf);
         GeneticAlgorithmProblem gap = new GenericGeneticAlgorithmProblem(ef, odd, mf, cf);
         
-        RandomizedHillClimbing rhc = new RandomizedHillClimbing(hcp);      
-        FixedIterationTrainer fit = new FixedIterationTrainer(rhc, 200000);
-        fit.train();
-        System.out.println(ef.value(rhc.getOptimal()));
         
-        SimulatedAnnealing sa = new SimulatedAnnealing(1E12, .95, hcp);
-        fit = new FixedIterationTrainer(sa, 200000);
-        fit.train();
-        System.out.println(ef.value(sa.getOptimal()));
+        FixedIterationTrainer fit;
         
-        StandardGeneticAlgorithm ga = new StandardGeneticAlgorithm(200, 150, 20, gap);
-        fit = new FixedIterationTrainer(ga, 1000);
-        fit.train();
-        System.out.println(ef.value(ga.getOptimal()));
+        for(int i=0;i<RHC_COUNT;i++){
+	        RandomizedHillClimbing rhc = new RandomizedHillClimbing(hcp);      
+	        fit = new FixedIterationTrainer(rhc, 200000);
+	        fit.train();
+	        System.out.println("RHC"+i+" : "+ef.value(rhc.getOptimal()));
+	        
+	        
+        }
+        
+        for(int i=0;i<SA_COUNT;i++){
+	        SimulatedAnnealing sa = new SimulatedAnnealing(100, .95, hcp);
+	        fit = new FixedIterationTrainer(sa, 200000);
+	        fit.train();
+	        System.out.println("SA"+i+": "+ef.value(sa.getOptimal()));
+	        
+        }
+        
+        
+        for(int i=0; i<GA_COUNT; i++){
+	        StandardGeneticAlgorithm ga = new StandardGeneticAlgorithm(200, 100, 20, gap);
+	        fit = new FixedIterationTrainer(ga, 1000);
+	        fit.train();
+	        System.out.println("GA"+i+": "+ef.value(ga.getOptimal()));
+        }
         
         // for mimic we use a sort encoding
         ef = new TravelingSalesmanSortEvaluationFunction(points);
@@ -78,10 +97,12 @@ public class TravelingSalesmanTest {
         Distribution df = new DiscreteDependencyTree(.1, ranges); 
         ProbabilisticOptimizationProblem pop = new GenericProbabilisticOptimizationProblem(ef, odd, df);
         
-        MIMIC mimic = new MIMIC(200, 100, pop);
-        fit = new FixedIterationTrainer(mimic, 1000);
-        fit.train();
-        System.out.println(ef.value(mimic.getOptimal()));
+        for(int i=0;i<MIMIC_COUNT;i++){
+	        MIMIC mimic = new MIMIC(200, 5, pop);
+	        fit = new FixedIterationTrainer(mimic, 1000);
+	        fit.train();
+	        System.out.println("MIMIC"+i+": "+ef.value(mimic.getOptimal()));
+        }
         
     }
 }

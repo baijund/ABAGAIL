@@ -27,6 +27,7 @@ public class CSVDataSetReader extends DataSetReader {
         String line;
         List<Instance> data = new ArrayList<Instance>();
         Pattern pattern = Pattern.compile("[ ,]+");
+        br.readLine();
         while ((line = br.readLine()) != null) {
             String[] split = pattern.split(line.trim());
             double[] input = new double[split.length];

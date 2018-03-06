@@ -32,9 +32,17 @@ import shared.FixedIterationTrainer;
  */
 public class FourPeaksTest {
     /** The n value */
-    private static final int N = 200;
+    private static final int N = 85;
     /** The t value */
-    private static final int T = N / 5;
+    private static final int T = 12;
+    
+    
+    
+    
+    private static int RHC_COUNT = 20;
+    private static int SA_COUNT = 20;
+    private static int GA_COUNT = 20;
+    private static int MIMIC_COUNT = 20;
     
     public static void main(String[] args) {
         int[] ranges = new int[N];
@@ -48,25 +56,39 @@ public class FourPeaksTest {
         HillClimbingProblem hcp = new GenericHillClimbingProblem(ef, odd, nf);
         GeneticAlgorithmProblem gap = new GenericGeneticAlgorithmProblem(ef, odd, mf, cf);
         ProbabilisticOptimizationProblem pop = new GenericProbabilisticOptimizationProblem(ef, odd, df);
+
+        FixedIterationTrainer fit;
         
-        RandomizedHillClimbing rhc = new RandomizedHillClimbing(hcp);      
-        FixedIterationTrainer fit = new FixedIterationTrainer(rhc, 200000);
-        fit.train();
-        System.out.println("RHC: " + ef.value(rhc.getOptimal()));
+        for(int i=0;i<RHC_COUNT;i++){
+	        RandomizedHillClimbing rhc = new RandomizedHillClimbing(hcp);      
+	        fit = new FixedIterationTrainer(rhc, 200000);
+	        fit.train();
+	        System.out.println("RHC"+i+" : "+ef.value(rhc.getOptimal()));
+	        
+	        
+        }
         
-        SimulatedAnnealing sa = new SimulatedAnnealing(1E11, .95, hcp);
-        fit = new FixedIterationTrainer(sa, 200000);
-        fit.train();
-        System.out.println("SA: " + ef.value(sa.getOptimal()));
+        for(int i=0;i<SA_COUNT;i++){
+	        SimulatedAnnealing sa = new SimulatedAnnealing(100, .95, hcp);
+	        fit = new FixedIterationTrainer(sa, 200000);
+	        fit.train();
+	        System.out.println("SA"+i+": "+ef.value(sa.getOptimal()));
+	        
+        }
         
-        StandardGeneticAlgorithm ga = new StandardGeneticAlgorithm(200, 100, 10, gap);
-        fit = new FixedIterationTrainer(ga, 1000);
-        fit.train();
-        System.out.println("GA: " + ef.value(ga.getOptimal()));
         
-        MIMIC mimic = new MIMIC(200, 20, pop);
-        fit = new FixedIterationTrainer(mimic, 1000);
-        fit.train();
-        System.out.println("MIMIC: " + ef.value(mimic.getOptimal()));
+        for(int i=0; i<GA_COUNT; i++){
+	        StandardGeneticAlgorithm ga = new StandardGeneticAlgorithm(200, 100, 20, gap);
+	        fit = new FixedIterationTrainer(ga, 1000);
+	        fit.train();
+	        System.out.println("GA"+i+": "+ef.value(ga.getOptimal()));
+        }
+        
+        for(int i=0;i<MIMIC_COUNT;i++){
+	        MIMIC mimic = new MIMIC(200, 5, pop);
+	        fit = new FixedIterationTrainer(mimic, 1000);
+	        fit.train();
+	        System.out.println("MIMIC"+i+": "+ef.value(mimic.getOptimal()));
+        }
     }
 }
